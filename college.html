@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Profile - Dilkap ERP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .logout-top {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .logout-top a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .logout-top a:hover { color: #fff; }
+        .profile-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            padding: 50px 30px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .profile-header::before {
+            content: "";
+            position: absolute;
+            top: -50px; left: 50%;
+            transform: translateX(-50%);
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .profile-header::after {
+            content: "\f19d";
+            font-family: "Bootstrap Icons";
+            font-size: 55px;
+            color: white;
+            z-index: 2;
+            display: block;
+        }
+        .profile-header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 60px;
+        }
+        .profile-header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+        }
+        .profile-body { padding: 40px; }
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px 0;
+            border-bottom: 1px solid #e3e7ef;
+            transition: all 0.3s ease;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row:hover {
+            background-color: #f0f4ff;
+            margin: 0 -40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-radius: 8px;
+        }
+        .detail-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #e8f0fe 0%, #dbe9fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .detail-icon i {
+            font-size: 22px;
+            color: #1a73e8;
+        }
+        .detail-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-size: 17px;
+            color: #1e293b;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .profile-footer {
+            background: #f8f9ff;
+            padding: 25px 40px;
+            text-align: center;
+            border-top: 1px solid #e3e7ef;
+        }
+        .profile-footer p {
+            color: #64748b;
+            font-size: 13px;
+        }
+        @media (max-width: 600px) {
+            .profile-body { padding: 25px; }
+            .detail-row:hover { margin: 0; padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logout-top">
+            <a href="index.html"><i class="bi bi-door-closed"></i> Logout</a>
+        </div>
+        <div class="profile-card">
+            <div class="profile-header">
+                <h id="collegeName">College Profile</h>
+                <p>Verified Institution Profile</p>
+            </div>
+            <div class="profile-body">
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="bi bi-buildings-fill"></i></div>
+                    <div>
+                        <div class="detail-label">College Name</div>
+                        <div class="detail-value" id="collegeNameVal">College Name</div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <div>
+                        <div class="detail-label">College Address</div>
+                        <div class="detail-value" id="collegeAddrVal">College Address</div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="bi bi-telephone-fill"></i></div>
+                    <div>
+                        <div class="detail-label">Contact Number</div>
+                        <div class="detail-value" id="collegeContactVal">Contact Number</div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-footer">
+                <p>College Directory &mdash; Connecting Students &amp; Faculty</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var db = localStorage.getItem('collegeDB');
+        var data;
+        if (db) {
+            data = JSON.parse(db);
+        } else {
+            data = {
+                college_name: "Dilkap College of Engineering",
+                college_address: "Plot No. 123, Knowledge Park V, Greater Noida, Uttar Pradesh 201306, India",
+                college_contact_number: "+91-120-1234-5678"
+            };
+            localStorage.setItem('collegeDB', JSON.stringify(data));
+        }
+
+        document.getElementById('collegeName').textContent = data.college_name;
+        document.getElementById('collegeNameVal').textContent = data.college_name;
+        document.getElementById('collegeAddrVal').textContent = data.college_address;
+        document.getElementById('collegeContactVal').textContent = data.college_contact_number;
+    </script>
+</body>
+</html>
