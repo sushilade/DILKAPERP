@@ -610,9 +610,14 @@
     </div>
 
     <script>
-        var API_BASE = 'https://cuddly-giggle-4j6xj577pg4w376p5-8080.app.github.dev';
+        var GITHUB_TOKEN = 'ghu_ShRHIw2ggF2I4Lq5TxDrRZ2hOjKjFo2GQwQX';
+        var GITHUB_OWNER = 'sushilade';
+        var GITHUB_REPO = 'DILKAPERP';
+        var DATA_FILE_PATH = 'data/colleges.json';
+        var RAW_URL = 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + DATA_FILE_PATH;
+        var API_URL = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE_PATH;
         var editCollegeId = null;
-        var collegesCache = [];
+        var dataCache = { profile: {}, colleges: [] };
 
         function fileToBase64(file, callback) {
             var reader = new FileReader();
@@ -639,6 +644,14 @@
             }
         }
 
+        function b64encode(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function b64decode(str) {
+            return decodeURIComponent(escape(window.atob(str)));
+        }
+
         function updateMainDisplay(data) {
             document.getElementById('mainCollegeName').textContent = data.college_name || 'College Profile';
             document.getElementById('mainNameVal').textContent = data.college_name || 'College Name';
@@ -646,30 +659,41 @@
             document.getElementById('mainContactVal').textContent = data.college_contact_number || 'Contact Number';
         }
 
-        async function loadMainProfile() {
+        async function loadData() {
             try {
-                var res = await fetch(API_BASE + '/api/profile');
+                var res = await fetch(RAW_URL);
                 if (res.ok) {
                     var data = await res.json();
-                    updateMainDisplay(data);
-                } else {
-                    updateMainDisplay({ college_name: 'Dilkap College of Engineering', college_address: 'Plot No. 123, Knowledge Park V, Greater Noida, Uttar Pradesh 201306, India', college_contact_number: '+91-120-1234-5678' });
+                    dataCache.profile = data.profile || {};
+                    dataCache.colleges = data.colleges || [];
+                    return data;
                 }
+                dataCache = { profile: {}, colleges: [] };
+                return dataCache;
             } catch(e) {
-                updateMainDisplay({ college_name: 'Dilkap College of Engineering', college_address: 'Plot No. 123, Knowledge Park V, Greater Noida, Uttar Pradesh 201306, India', college_contact_number: '+91-120-1234-5678' });
+                dataCache = { profile: {}, colleges: [] };
+                return dataCache;
             }
         }
 
-        async function loadColleges() {
+        async function saveData(data) {
             try {
-                var res = await fetch(API_BASE + '/api/colleges');
-                if (res.ok) {
-                    collegesCache = await res.json();
-                    return collegesCache;
-                }
-                return [];
+                var getRes = await fetch(API_URL, {
+                    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json' }
+                });
+                if (!getRes.ok) throw new Error('Failed to fetch file SHA');
+                var fileData = await getRes.json();
+                var sha = fileData.sha;
+                var content = b64encode(JSON.stringify(data, null, 2));
+                var putRes = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'Update college data', content: content, sha: sha, branch: 'main' })
+                });
+                return putRes.ok;
             } catch(e) {
-                return [];
+                console.error('Save error:', e);
+                return false;
             }
         }
 
@@ -683,7 +707,8 @@
         }
 
         async function renderColleges() {
-            var colleges = await loadColleges();
+            var data = await loadData();
+            var colleges = data.colleges || [];
             var grid = document.getElementById('collegesGrid');
             var countEl = document.getElementById('collegesCount');
 
@@ -699,6 +724,9 @@
                         '<button class="card-edit-btn" onclick="openEditCollegeModal(' + c.id + ')">' +
                             '<i class="bi bi-pencil"></i>' +
                         '</button>' +
+                        '<button class="card-edit-btn" style="right:50px;opacity:1;background:rgba(220,38,38,0.1);color:#dc2626;" onclick="deleteCollege(' + c.id + ')">' +
+                            '<i class="bi bi-trash"></i>' +
+                        '</button>' +
                         (c.college_image ? '<div style="margin-bottom:12px;"><img src="' + c.college_image + '" style="max-width:100%;max-height:120px;border-radius:8px;border:1px solid #e2e8f0;"></div>' : '') +
                         '<div class="college-name">' + c.college_name + '</div>' +
                         '<div class="college-detail"><i class="bi bi-geo-alt"></i> ' + c.college_address + '</div>' +
@@ -712,6 +740,11 @@
                 }).join('');
             }
             countEl.textContent = '(' + colleges.length + ')';
+        }
+
+        async function loadMainProfile() {
+            var data = await loadData();
+            updateMainDisplay(data.profile || {});
         }
 
         function openAddModal() {
@@ -751,7 +784,9 @@
 
             if (!name || !address || !contact || !expiry) return;
 
-            var collegeData = {
+            var nextId = (dataCache.colleges.length > 0 ? Math.max.apply(null, dataCache.colleges.map(function(c) { return c.id || 0; })) + 1 : 1);
+            var newCollege = {
+                id: nextId,
                 college_name: name,
                 college_address: address,
                 college_contact_number: contact,
@@ -760,49 +795,32 @@
                 college_password: cpwd,
                 college_image: imageData
             };
+            dataCache.colleges.push(newCollege);
 
-            try {
-                var res = await fetch(API_BASE + '/api/colleges', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(collegeData)
-                });
-                if (res.ok) {
-                    document.getElementById('addSuccess').classList.add('show');
-                    setTimeout(function() {
-                        closeAddModal();
-                        renderColleges();
-                    }, 1500);
-                } else {
-                    document.getElementById('addAuthError').style.display = 'block';
-                    document.getElementById('addAuthError').textContent = 'Failed to save college. Please try again.';
-                }
-            } catch(e) {
+            var data = { profile: dataCache.profile, colleges: dataCache.colleges };
+            var ok = await saveData(data);
+            if (ok) {
+                document.getElementById('addSuccess').classList.add('show');
+                setTimeout(function() {
+                    closeAddModal();
+                    renderColleges();
+                }, 1500);
+            } else {
                 document.getElementById('addAuthError').style.display = 'block';
-                document.getElementById('addAuthError').textContent = 'Network error. Please check the API connection.';
+                document.getElementById('addAuthError').textContent = 'Failed to save college. Please try again.';
             }
         }
 
         async function openEditMainModal() {
-            var data = await loadMainProfileData();
-            document.getElementById('editCollegeName').value = data.college_name || '';
-            document.getElementById('editCollegeAddress').value = data.college_address || '';
-            document.getElementById('editCollegeContact').value = data.college_contact_number || '';
+            await loadData();
+            document.getElementById('editCollegeName').value = dataCache.profile.college_name || '';
+            document.getElementById('editCollegeAddress').value = dataCache.profile.college_address || '';
+            document.getElementById('editCollegeContact').value = dataCache.profile.college_contact_number || '';
             document.getElementById('editSuccess').classList.remove('show');
             document.getElementById('editModal').style.display = 'flex';
             setTimeout(function() {
                 document.querySelector('#editModal .modal').classList.add('show');
             }, 10);
-        }
-
-        async function loadMainProfileData() {
-            try {
-                var res = await fetch(API_BASE + '/api/profile');
-                if (res.ok) return await res.json();
-                return {};
-            } catch(e) {
-                return {};
-            }
         }
 
         function closeEditModal() {
@@ -818,20 +836,11 @@
                 college_address: document.getElementById('editCollegeAddress').value.trim(),
                 college_contact_number: document.getElementById('editCollegeContact').value.trim()
             };
-            try {
-                var res = await fetch(API_BASE + '/api/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    updateMainDisplay(data);
-                    document.getElementById('editSuccess').classList.add('show');
-                    setTimeout(function() {
-                        closeEditModal();
-                    }, 1500);
-                }
-            } catch(e) {
+            dataCache.profile = data;
+            var fullData = { profile: dataCache.profile, colleges: dataCache.colleges };
+            var ok = await saveData(fullData);
+            if (ok) {
+                updateMainDisplay(data);
                 document.getElementById('editSuccess').classList.add('show');
                 setTimeout(function() {
                     closeEditModal();
@@ -840,12 +849,9 @@
         }
 
         async function openEditCollegeModal(id) {
+            await loadData();
             editCollegeId = id;
-            var college = collegesCache.find(function(c) { return c.id === id; });
-            if (!college) {
-                await loadColleges();
-                college = collegesCache.find(function(c) { return c.id === id; });
-            }
+            var college = dataCache.colleges.find(function(c) { return c.id === id; });
             if (!college) return;
             document.getElementById('cardCollegeName').value = college.college_name;
             document.getElementById('cardCollegeAddress').value = college.college_address;
@@ -887,37 +893,30 @@
 
             if (!name || !address || !contact || !expiry) return;
 
-            var collegeData = {
-                college_name: name,
-                college_address: address,
-                college_contact_number: contact,
-                expiry_date: expiry,
-                college_id: cid,
-                college_password: cpwd,
-                college_image: imageData
-            };
+            var college = dataCache.colleges.find(function(c) { return c.id === editCollegeId; });
+            if (college) {
+                college.college_name = name;
+                college.college_address = address;
+                college.college_contact_number = contact;
+                college.expiry_date = expiry;
+                college.college_id = cid;
+                college.college_password = cpwd;
+                college.college_image = imageData;
+            }
 
-            try {
-                var res = await fetch(API_BASE + '/api/colleges/' + editCollegeId, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(collegeData)
-                });
-                if (res.ok) {
-                    renderColleges();
-                }
-            } catch(e) {}
-
+            var fullData = { profile: dataCache.profile, colleges: dataCache.colleges };
+            await saveData(fullData);
             editCollegeId = null;
             closeEditCollegeModal();
+            renderColleges();
         }
 
         async function deleteCollege(id) {
             if (!confirm('Are you sure you want to delete this college?')) return;
-            try {
-                var res = await fetch(API_BASE + '/api/colleges/' + id, { method: 'DELETE' });
-                if (res.ok) renderColleges();
-            } catch(e) {}
+            dataCache.colleges = dataCache.colleges.filter(function(c) { return c.id !== id; });
+            var fullData = { profile: dataCache.profile, colleges: dataCache.colleges };
+            await saveData(fullData);
+            renderColleges();
         }
 
         loadMainProfile();
