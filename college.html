@@ -358,11 +358,11 @@
         <div class="top-bar">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <a href="index.html" class="logout-link"><i class="bi bi-door-closed"></i> Logout</a>
-                <button class="btn-edit" onclick="openAuthModal(function(){ openEditMainModal(); })" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <button class="btn-edit" onclick="openEditMainModal()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                     <i class="bi bi-pencil-square"></i> Edit Main Profile
                 </button>
             </div>
-            <button class="btn-add" onclick="openAuthModal(function(){ openAddModal(); })">
+            <button class="btn-add" onclick="openAddModal()">
                 <i class="bi bi-plus-lg"></i> Add College
             </button>
         </div>
@@ -414,40 +414,7 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="authModal">
-        <div class="modal" style="max-width:420px;">
-            <div class="modal-header">
-                <h2><i class="bi bi-lock-fill"></i> Authentication Required</h2>
-                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
-            </div>
-            <div id="authError" style="display:none;background:#fee2e2;color:#dc2626;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;align-items:center;gap:8px;">
-                <i class="bi bi-exclamation-circle-fill"></i><span>Invalid ID or Password</span>
-            </div>
-            <div class="form-group">
-                <label for="authId">User ID</label>
-                <div class="input-wrapper">
-                    <i class="bi bi-person-circle"></i>
-                    <input type="text" id="authId" placeholder="Enter user ID" autocomplete="off">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="authPassword">Password</label>
-                <div class="input-wrapper">
-                    <i class="bi bi-lock-fill"></i>
-                    <input type="password" id="authPassword" placeholder="Enter password" autocomplete="off">
-                </div>
-            </div>
-            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;font-size:13px;color:#1e40af;margin-bottom:20px;">
-                <i class="bi bi-info-circle-fill"></i> Use <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">admin</code> / <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">admin</code>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeAuthModal()">Cancel</button>
-                <button class="btn-save" onclick="checkAuth()">
-                    <i class="bi bi-check-circle"></i> Login
-                </button>
-            </div>
         </div>
-    </div>
 
     <div class="modal-overlay" id="addModal">
         <div class="modal">
@@ -486,6 +453,22 @@
                     <input type="date" id="addExpiryDate" required>
                 </div>
             </div>
+            <hr style="border:0;border-top:1px solid #e3e7ef;margin:20px 0;">
+            <div class="form-group">
+                <label for="addCollegeId">User ID</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-person-circle"></i>
+                    <input type="text" id="addCollegeId" placeholder="Enter user ID" autocomplete="off" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="addCollegePassword">Password</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="addCollegePassword" placeholder="Enter password" autocomplete="off" required>
+                </div>
+            </div>
+            <div id="addAuthError" style="display:none;background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:15px;"></div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
                 <button class="btn-save" onclick="saveCollege()">
@@ -575,6 +558,20 @@
                     <input type="date" id="cardExpiryDate" required>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="cardCollegeId">User ID</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-person-circle"></i>
+                    <input type="text" id="cardCollegeId" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cardCollegePassword">Password</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="cardCollegePassword" required>
+                </div>
+            </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeEditCollegeModal()">Cancel</button>
                 <button class="btn-save" onclick="saveCollegeEdit()">
@@ -586,40 +583,6 @@
 
     <script>
         var editColleggeIndex = null;
-        var authCallback = null;
-
-        function openAuthModal(callback) {
-            authCallback = callback;
-            document.getElementById('authId').value = '';
-            document.getElementById('authPassword').value = '';
-            document.getElementById('authError').style.display = 'none';
-            document.getElementById('authModal').style.display = 'flex';
-            setTimeout(function() {
-                document.querySelector('#authModal .modal').classList.add('show');
-            }, 10);
-        }
-
-        function closeAuthModal() {
-            document.querySelector('#authModal .modal').classList.remove('show');
-            setTimeout(function() {
-                document.getElementById('authModal').style.display = 'none';
-            }, 300);
-            authCallback = null;
-        }
-
-        function checkAuth() {
-            var id = document.getElementById('authId').value.trim();
-            var pwd = document.getElementById('authPassword').value;
-
-            if (id === 'admin' && pwd === 'admin') {
-                closeAuthModal();
-                if (authCallback) {
-                    authCallback();
-                }
-            } else {
-                document.getElementById('authError').style.display = 'flex';
-            }
-        }
 
         function loadMainProfile() {
             var db = localStorage.getItem('collegeDB');
@@ -676,13 +639,15 @@
                     var daysText = exp.days >= 0 ? exp.days + ' days left' : 'Expired';
 
                     return '<div class="college-card ' + exp.card + '">' +
-                        '<button class="card-edit-btn" onclick="openAuthModal(function(){ openEditCollegeModal(' + i + '); })">' +
+                        '<button class="card-edit-btn" onclick="openEditCollegeModal(' + i + ')">' +
                             '<i class="bi bi-pencil"></i>' +
                         '</button>' +
                         '<div class="college-name">' + c.college_name + '</div>' +
                         '<div class="college-detail"><i class="bi bi-geo-alt"></i> ' + c.college_address + '</div>' +
                         '<div class="college-detail"><i class="bi bi-telephone"></i> ' + c.college_contact_number + '</div>' +
                         '<div class="college-detail"><i class="bi bi-calendar-check"></i> Expiry: ' + displayDate + '</div>' +
+                        '<div class="college-detail"><i class="bi bi-person-circle"></i> ID: <strong>' + (c.college_id || '-') + '</strong></div>' +
+                        '<div class="college-detail"><i class="bi bi-lock"></i> Password: <strong>' + (c.college_password || '-') + '</strong></div>' +
                         '<span class="expiry-badge ' + exp.class + '">' + exp.badge + '</span>' +
                         '<div style="font-size:12px;color:#94a3b8;margin-top:8px;">' + daysText + '</div>' +
                         '</div>';
@@ -696,7 +661,10 @@
             document.getElementById('addCollegeAddress').value = '';
             document.getElementById('addCollegeContact').value = '';
             document.getElementById('addExpiryDate').value = '';
+            document.getElementById('addCollegeId').value = '';
+            document.getElementById('addCollegePassword').value = '';
             document.getElementById('addSuccess').classList.remove('show');
+            document.getElementById('addAuthError').style.display = 'none';
             document.getElementById('addModal').style.display = 'flex';
             setTimeout(function() {
                 document.querySelector('#addModal .modal').classList.add('show');
@@ -715,6 +683,8 @@
             var address = document.getElementById('addCollegeAddress').value.trim();
             var contact = document.getElementById('addCollegeContact').value.trim();
             var expiry = document.getElementById('addExpiryDate').value;
+            var cid = document.getElementById('addCollegeId').value.trim();
+            var cpwd = document.getElementById('addCollegePassword').value;
 
             if (!name || !address || !contact || !expiry) return;
 
@@ -723,7 +693,9 @@
                 college_name: name,
                 college_address: address,
                 college_contact_number: contact,
-                expiry_date: expiry
+                expiry_date: expiry,
+                college_id: cid,
+                college_password: cpwd
             });
             saveCollegesDB(colleges);
 
@@ -783,6 +755,8 @@
             document.getElementById('cardCollegeAddress').value = c.college_address;
             document.getElementById('cardCollegeContact').value = c.college_contact_number;
             document.getElementById('cardExpiryDate').value = c.expiry_date;
+            document.getElementById('cardCollegeId').value = c.college_id || '';
+            document.getElementById('cardCollegePassword').value = c.college_password || '';
             document.getElementById('editCollegeModal').style.display = 'flex';
             setTimeout(function() {
                 document.querySelector('#editCollegeModal .modal').classList.add('show');
@@ -801,6 +775,8 @@
             var address = document.getElementById('cardCollegeAddress').value.trim();
             var contact = document.getElementById('cardCollegeContact').value.trim();
             var expiry = document.getElementById('cardExpiryDate').value;
+            var cid = document.getElementById('cardCollegeId').value.trim();
+            var cpwd = document.getElementById('cardCollegePassword').value;
 
             if (!name || !address || !contact || !expiry) return;
 
@@ -810,7 +786,9 @@
                     college_name: name,
                     college_address: address,
                     college_contact_number: contact,
-                    expiry_date: expiry
+                    expiry_date: expiry,
+                    college_id: cid,
+                    college_password: cpwd
                 };
                 saveCollegesDB(colleges);
                 renderColleges();
