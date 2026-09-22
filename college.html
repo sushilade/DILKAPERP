@@ -358,11 +358,11 @@
         <div class="top-bar">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <a href="index.html" class="logout-link"><i class="bi bi-door-closed"></i> Logout</a>
-                <button class="btn-edit" onclick="openEditMainModal()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <button class="btn-edit" onclick="openAuthModal(function(){ openEditMainModal(); })" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                     <i class="bi bi-pencil-square"></i> Edit Main Profile
                 </button>
             </div>
-            <button class="btn-add" onclick="openAddModal()">
+            <button class="btn-add" onclick="openAuthModal(function(){ openAddModal(); })">
                 <i class="bi bi-plus-lg"></i> Add College
             </button>
         </div>
@@ -410,6 +410,41 @@
                     <i class="bi bi-info-circle"></i>
                     <p>No colleges added yet. Click "Add College" to get started.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <h2><i class="bi bi-lock-fill"></i> Authentication Required</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div id="authError" style="display:none;background:#fee2e2;color:#dc2626;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:20px;align-items:center;gap:8px;">
+                <i class="bi bi-exclamation-circle-fill"></i><span>Invalid ID or Password</span>
+            </div>
+            <div class="form-group">
+                <label for="authId">User ID</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-person-circle"></i>
+                    <input type="text" id="authId" placeholder="Enter user ID" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="authPassword">Password</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="authPassword" placeholder="Enter password" autocomplete="off">
+                </div>
+            </div>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;font-size:13px;color:#1e40af;margin-bottom:20px;">
+                <i class="bi bi-info-circle-fill"></i> Use <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">admin</code> / <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">admin</code>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeAuthModal()">Cancel</button>
+                <button class="btn-save" onclick="checkAuth()">
+                    <i class="bi bi-check-circle"></i> Login
+                </button>
             </div>
         </div>
     </div>
@@ -551,6 +586,40 @@
 
     <script>
         var editColleggeIndex = null;
+        var authCallback = null;
+
+        function openAuthModal(callback) {
+            authCallback = callback;
+            document.getElementById('authId').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authError').style.display = 'none';
+            document.getElementById('authModal').style.display = 'flex';
+            setTimeout(function() {
+                document.querySelector('#authModal .modal').classList.add('show');
+            }, 10);
+        }
+
+        function closeAuthModal() {
+            document.querySelector('#authModal .modal').classList.remove('show');
+            setTimeout(function() {
+                document.getElementById('authModal').style.display = 'none';
+            }, 300);
+            authCallback = null;
+        }
+
+        function checkAuth() {
+            var id = document.getElementById('authId').value.trim();
+            var pwd = document.getElementById('authPassword').value;
+
+            if (id === 'admin' && pwd === 'admin') {
+                closeAuthModal();
+                if (authCallback) {
+                    authCallback();
+                }
+            } else {
+                document.getElementById('authError').style.display = 'flex';
+            }
+        }
 
         function loadMainProfile() {
             var db = localStorage.getItem('collegeDB');
@@ -607,7 +676,7 @@
                     var daysText = exp.days >= 0 ? exp.days + ' days left' : 'Expired';
 
                     return '<div class="college-card ' + exp.card + '">' +
-                        '<button class="card-edit-btn" onclick="openEditCollegeModal(' + i + ')">' +
+                        '<button class="card-edit-btn" onclick="openAuthModal(function(){ openEditCollegeModal(' + i + '); })">' +
                             '<i class="bi bi-pencil"></i>' +
                         '</button>' +
                         '<div class="college-name">' + c.college_name + '</div>' +
