@@ -685,7 +685,10 @@
                 var getRes = await fetch(API_URL, {
                     headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json' }
                 });
-                if (!getRes.ok) throw new Error('Failed to fetch file SHA');
+                if (!getRes.ok) {
+                    var errText = await getRes.text();
+                    throw new Error('GET failed: ' + getRes.status + ' ' + errText);
+                }
                 var fileData = await getRes.json();
                 var sha = fileData.sha;
                 var content = b64encode(JSON.stringify(data, null, 2));
@@ -694,9 +697,17 @@
                     headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: 'Update college data', content: content, sha: sha, branch: 'main' })
                 });
-                return putRes.ok;
+                if (!putRes.ok) {
+                    var putErrText = await putRes.text();
+                    throw new Error('PUT failed: ' + putRes.status + ' ' + putErrText);
+                }
+                return true;
             } catch(e) {
                 console.error('Save error:', e);
+                if (typeof document !== 'undefined' && document.getElementById('addAuthError')) {
+                    document.getElementById('addAuthError').style.display = 'block';
+                    document.getElementById('addAuthError').textContent = 'Error: ' + e.message;
+                }
                 return false;
             }
         }
