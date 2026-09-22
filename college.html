@@ -468,6 +468,21 @@
                     <input type="password" id="addCollegePassword" placeholder="Enter password" autocomplete="off" required>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="addCollegeImage">College Letterhead Image</label>
+                <div style="border:2px dashed #e2e8f0;border-radius:12px;padding:20px;text-align:center;transition:all 0.3s;">
+                    <input type="file" id="addCollegeImage" accept="image/*" style="display:none;" onchange="previewImage('addCollegeImage','addImagePreview','addImageBase64')">
+                    <label for="addCollegeImage" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:#1a73e8;font-weight:600;">
+                        <i class="bi bi-image-fill"></i> Click to upload letterhead
+                    </label>
+                    <div style="margin-top:10px;font-size:12px;color:#94a3b8;">PNG, JPG, GIF - max 2MB</div>
+                </div>
+            </div>
+            <div id="addImagePreview" style="margin:15px 0;text-align:center;display:none;">
+                <img id="addImagePreviewImg" style="max-width:100%;max-height:150px;border-radius:8px;border:1px solid #e2e8f0;" src="" alt="Preview">
+                <div style="margin-top:5px;font-size:12px;color:#94a3b8;" id="addImageName"></div>
+            </div>
+            <input type="hidden" id="addImageBase64" value="">
             <div id="addAuthError" style="display:none;background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:15px;"></div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
@@ -572,6 +587,19 @@
                     <input type="password" id="cardCollegePassword" required>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="cardCollegeImage">College Letterhead Image</label>
+                <div style="border:2px dashed #e2e8f0;border-radius:12px;padding:15px;text-align:center;">
+                    <input type="file" id="cardCollegeImage" accept="image/*" style="display:none;" onchange="previewImage('cardCollegeImage','cardImagePreview','cardImageBase64')">
+                    <label for="cardCollegeImage" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:#1a73e8;font-weight:600;">
+                        <i class="bi bi-image-fill"></i> Upload letterhead
+                    </label>
+                </div>
+            </div>
+            <div id="cardImagePreview" style="margin:10px 0;text-align:center;display:none;">
+                <img id="cardImagePreviewImg" style="max-width:100%;max-height:120px;border-radius:8px;border:1px solid #e2e8f0;" src="" alt="Preview">
+            </div>
+            <input type="hidden" id="cardImageBase64" value="">
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeEditCollegeModal()">Cancel</button>
                 <button class="btn-save" onclick="saveCollegeEdit()">
@@ -583,6 +611,31 @@
 
     <script>
         var editColleggeIndex = null;
+
+        function fileToBase64(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) { callback(e.target.result); };
+            reader.readAsDataURL(file);
+        }
+
+        function previewImage(inputId, previewId, hiddenFieldId) {
+            var input = document.getElementById(inputId);
+            var previewDiv = document.getElementById(previewId);
+            var hiddenField = document.getElementById(hiddenFieldId);
+            if (input.files && input.files[0]) {
+                var file = input.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size should be less than 2MB');
+                    return;
+                }
+                fileToBase64(file, function(dataUrl) {
+                    var img = previewDiv.querySelector('img');
+                    if (img) { img.src = dataUrl; }
+                    previewDiv.style.display = 'block';
+                    if (hiddenField) { hiddenField.value = dataUrl; }
+                });
+            }
+        }
 
         function loadMainProfile() {
             var db = localStorage.getItem('collegeDB');
@@ -642,6 +695,7 @@
                         '<button class="card-edit-btn" onclick="openEditCollegeModal(' + i + ')">' +
                             '<i class="bi bi-pencil"></i>' +
                         '</button>' +
+                        (c.college_image ? '<div style="margin-bottom:12px;"><img src="' + c.college_image + '" style="max-width:100%;max-height:120px;border-radius:8px;border:1px solid #e2e8f0;"></div>' : '') +
                         '<div class="college-name">' + c.college_name + '</div>' +
                         '<div class="college-detail"><i class="bi bi-geo-alt"></i> ' + c.college_address + '</div>' +
                         '<div class="college-detail"><i class="bi bi-telephone"></i> ' + c.college_contact_number + '</div>' +
@@ -663,6 +717,10 @@
             document.getElementById('addExpiryDate').value = '';
             document.getElementById('addCollegeId').value = '';
             document.getElementById('addCollegePassword').value = '';
+            document.getElementById('addCollegeImage').value = '';
+            document.getElementById('addImageBase64').value = '';
+            var preview = document.getElementById('addImagePreview');
+            if (preview) preview.style.display = 'none';
             document.getElementById('addSuccess').classList.remove('show');
             document.getElementById('addAuthError').style.display = 'none';
             document.getElementById('addModal').style.display = 'flex';
@@ -685,6 +743,7 @@
             var expiry = document.getElementById('addExpiryDate').value;
             var cid = document.getElementById('addCollegeId').value.trim();
             var cpwd = document.getElementById('addCollegePassword').value;
+            var imageData = document.getElementById('addImageBase64').value;
 
             if (!name || !address || !contact || !expiry) return;
 
@@ -695,7 +754,8 @@
                 college_contact_number: contact,
                 expiry_date: expiry,
                 college_id: cid,
-                college_password: cpwd
+                college_password: cpwd,
+                college_image: imageData
             });
             saveCollegesDB(colleges);
 
@@ -757,6 +817,16 @@
             document.getElementById('cardExpiryDate').value = c.expiry_date;
             document.getElementById('cardCollegeId').value = c.college_id || '';
             document.getElementById('cardCollegePassword').value = c.college_password || '';
+            var cardPreview = document.getElementById('cardImagePreview');
+            var cardPreviewImg = document.getElementById('cardImagePreviewImg');
+            document.getElementById('cardCollegeImage').value = '';
+            document.getElementById('cardImageBase64').value = c.college_image || '';
+            if (c.college_image && cardPreviewImg) {
+                cardPreviewImg.src = c.college_image;
+                cardPreview.style.display = 'block';
+            } else {
+                cardPreview.style.display = 'none';
+            }
             document.getElementById('editCollegeModal').style.display = 'flex';
             setTimeout(function() {
                 document.querySelector('#editCollegeModal .modal').classList.add('show');
@@ -777,6 +847,7 @@
             var expiry = document.getElementById('cardExpiryDate').value;
             var cid = document.getElementById('cardCollegeId').value.trim();
             var cpwd = document.getElementById('cardCollegePassword').value;
+            var imageData = document.getElementById('cardImageBase64').value;
 
             if (!name || !address || !contact || !expiry) return;
 
@@ -788,7 +859,8 @@
                     college_contact_number: contact,
                     expiry_date: expiry,
                     college_id: cid,
-                    college_password: cpwd
+                    college_password: cpwd,
+                    college_image: imageData
                 };
                 saveCollegesDB(colleges);
                 renderColleges();
