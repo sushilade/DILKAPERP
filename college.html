@@ -14,10 +14,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 950px; margin: 0 auto; }
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -35,47 +32,33 @@
             gap: 5px;
         }
         .logout-link:hover { color: #fff; }
-
-        .btn-add {
-            background: linear-gradient(135deg, #43e97b 0%, #188754 100%);
-            color: white;
+        .btn-add, .btn-edit {
             border: none;
-            padding: 12px 28px;
             border-radius: 50px;
+            padding: 12px 28px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.4);
             transition: all 0.3s ease;
             z-index: 10;
         }
-        .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(67, 233, 123, 0.5);
+        .btn-add {
+            background: linear-gradient(135deg, #43e97b 0%, #188754 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.4);
         }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(67, 233, 123, 0.5); }
         .btn-edit {
             background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             box-shadow: 0 6px 15px rgba(26, 115, 232, 0.4);
-            transition: all 0.3s ease;
-            margin-right: 10px;
+            font-size: 13px;
+            padding: 8px 18px;
         }
-        .btn-edit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(26, 115, 232, 0.5);
-        }
+        .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(26, 115, 232, 0.5); }
 
         .profile-card {
             background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
@@ -84,11 +67,10 @@
             overflow: hidden;
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
         }
         .profile-header {
             background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            padding: 40px 30px 25px;
+            padding: 50px 30px 30px;
             text-align: center;
             position: relative;
         }
@@ -120,10 +102,7 @@
             font-weight: 700;
             margin-top: 60px;
         }
-        .profile-header p {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 14px;
-        }
+        .profile-header p { color: rgba(255, 255, 255, 0.85); font-size: 14px; }
         .profile-body { padding: 40px; }
         .detail-row {
             display: flex;
@@ -148,7 +127,6 @@
             align-items: center;
             justify-content: center;
             margin-right: 20px;
-            flex-shrink: 0;
         }
         .detail-icon i { font-size: 22px; color: #1a73e8; }
         .detail-label {
@@ -159,12 +137,7 @@
             font-weight: 600;
             margin-bottom: 5px;
         }
-        .detail-value {
-            font-size: 17px;
-            color: #1e293b;
-            font-weight: 500;
-            line-height: 1.5;
-        }
+        .detail-value { font-size: 17px; color: #1e293b; font-weight: 500; line-height: 1.5; }
         .profile-footer {
             background: #f8f9ff;
             padding: 20px 40px;
@@ -172,6 +145,10 @@
             border-top: 1px solid #e3e7ef;
         }
         .profile-footer p { color: #64748b; font-size: 13px; }
+        @media (max-width: 600px) {
+            .profile-body { padding: 25px; }
+            .detail-row:hover { margin: 0; padding: 0 20px; }
+        }
 
         .colleges-section {
             background: rgba(255, 255, 255, 0.1);
@@ -180,6 +157,7 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 30px;
+            margin-top: 30px;
         }
         .colleges-title {
             color: white;
@@ -192,7 +170,7 @@
         }
         .colleges-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
         .college-card {
@@ -203,53 +181,39 @@
             text-align: left;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
         }
-        .college-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-        .college-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-        }
-        .college-card.expired::before { background: #ef4444; }
-        .college-card.active::before { background: #4ade80; }
-        .college-card.expiring::before { background: #f59e0b; }
-        .college-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 12px;
-        }
-        .college-detail {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.4;
-        }
+        .college-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); }
+        .college-name { font-size: 18px; font-weight: 700; color: #1e3c72; margin-bottom: 12px; }
+        .college-detail { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 14px; color: #475569; line-height: 1.4; }
         .college-detail i { color: #94a3b8; font-size: 16px; }
-        .expiry-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
+        .expiry-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px; }
         .badge-active { background: #dcfce7; color: #166534; }
         .badge-expiring { background: #fef3c7; color: #92400e; }
         .badge-expired { background: #fee2e2; color: #991b1b; }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: rgba(255, 255, 255, 0.6);
+        .card-edit-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(26, 115, 232, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #1a73e8;
+            transition: all 0.2s;
+            opacity: 0;
         }
+        .college-card:hover .card-edit-btn { opacity: 1; }
+        .card-edit-btn:hover {
+            background: rgba(26, 115, 232, 0.2);
+            transform: scale(1.1);
+        }
+        .empty-state { text-align: center; padding: 40px; color: rgba(255,255,255,0.5); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
 
         .modal-overlay {
@@ -305,10 +269,7 @@
             color: #94a3b8;
             transition: all 0.2s;
         }
-        .close-btn:hover {
-            background: #e2e8f0;
-            color: #334155;
-        }
+        .close-btn:hover { background: #e2e8f0; color: #334155; }
         .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
@@ -346,11 +307,8 @@
             background: #fff;
             box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
         }
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
+        .form-group input[type="date"] { padding-left: 14px; padding-right: 14px; }
+        .modal-actions { display: flex; gap: 15px; margin-top: 25px; }
         .btn-save {
             flex: 1;
             background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
@@ -367,10 +325,7 @@
             justify-content: center;
             gap: 6px;
         }
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(26, 115, 232, 0.4);
-        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(26, 115, 232, 0.4); }
         .btn-cancel {
             flex: 1;
             background: #f1f5f9;
@@ -396,18 +351,6 @@
             gap: 8px;
         }
         .save-success.show { display: flex; }
-        .expiry-input-wrapper { position: relative; }
-        .expiry-input-wrapper .icon {
-            position: absolute;
-            left: 14px; top: 50%;
-            transform: translateY(-50%);
-            font-size: 17px;
-            color: #94a3b8;
-        }
-        .expiry-input-wrapper input {
-            width: 100%;
-            padding: 14px 14px 14px 44px;
-        }
     </style>
 </head>
 <body>
@@ -415,7 +358,7 @@
         <div class="top-bar">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <a href="index.html" class="logout-link"><i class="bi bi-door-closed"></i> Logout</a>
-                <button class="btn-edit" onclick="openEditModal()">
+                <button class="btn-edit" onclick="openEditMainModal()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                     <i class="bi bi-pencil-square"></i> Edit Main Profile
                 </button>
             </div>
@@ -426,7 +369,7 @@
 
         <div class="profile-card">
             <div class="profile-header">
-                <h1 id="collegeName">College Profile</h1>
+                <h1 id="mainCollegeName">College Profile</h1>
                 <p>Verified Institution Profile</p>
             </div>
             <div class="profile-body">
@@ -434,21 +377,21 @@
                     <div class="detail-icon"><i class="bi bi-buildings-fill"></i></div>
                     <div>
                         <div class="detail-label">College Name</div>
-                        <div class="detail-value" id="collegeNameVal">College Name</div>
+                        <div class="detail-value" id="mainNameVal">College Name</div>
                     </div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
                     <div>
                         <div class="detail-label">College Address</div>
-                        <div class="detail-value" id="collegeAddrVal">College Address</div>
+                        <div class="detail-value" id="mainAddrVal">College Address</div>
                     </div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-icon"><i class="bi bi-telephone-fill"></i></div>
                     <div>
                         <div class="detail-label">Contact Number</div>
-                        <div class="detail-value" id="collegeContactVal">Contact Number</div>
+                        <div class="detail-value" id="mainContactVal">Contact Number</div>
                     </div>
                 </div>
             </div>
@@ -460,7 +403,7 @@
         <div class="colleges-section">
             <h2 class="colleges-title">
                 <i class="bi bi-building"></i>
-                All Colleges <span id="collegesCount" style="background:rgba(255,255,255,0.2);padding:2px 12px;border-radius:20px;font-size:13px;">0</span>
+                All Colleges <span id="collegesCount" style="background:rgba(255,255,255,0.2);padding:2px 12px;border-radius:20px;font-size:13px;">(0)</span>
             </h2>
             <div id="collegesGrid" class="colleges-grid">
                 <div class="empty-state">
@@ -477,11 +420,9 @@
                 <h2><i class="bi bi-plus-circle-fill"></i> Add New College</h2>
                 <button class="close-btn" onclick="closeAddModal()">&times;</button>
             </div>
-
             <div class="save-success" id="addSuccess">
                 <i class="bi bi-check-circle-fill"></i> College added successfully!
             </div>
-
             <div class="form-group">
                 <label for="addCollegeName">College Name</label>
                 <div class="input-wrapper">
@@ -489,7 +430,6 @@
                     <input type="text" id="addCollegeName" placeholder="Enter college name" required>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="addCollegeAddress">College Address</label>
                 <div class="input-wrapper">
@@ -497,7 +437,6 @@
                     <textarea id="addCollegeAddress" placeholder="Enter college address" required></textarea>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="addCollegeContact">Contact Number</label>
                 <div class="input-wrapper">
@@ -505,15 +444,13 @@
                     <input type="text" id="addCollegeContact" placeholder="Enter contact number" required>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="addExpiryDate">Expiry Date</label>
-                <div class="expiry-input-wrapper">
+                <div class="input-wrapper">
                     <i class="bi bi-calendar-event-fill"></i>
-                    <input type="date" id="addExpiryDate" style="padding-left:14px;" required>
+                    <input type="date" id="addExpiryDate" required>
                 </div>
             </div>
-
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
                 <button class="btn-save" onclick="saveCollege()">
@@ -553,6 +490,13 @@
                     <input type="text" id="editCollegeContact" placeholder="Enter contact number" required>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="editExpiryDate">Expiry Date</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-calendar-event-fill"></i>
+                    <input type="date" id="editExpiryDate" required>
+                </div>
+            </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
                 <button class="btn-save" onclick="saveMainProfile()">
@@ -562,7 +506,52 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editCollegeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="bi bi-pencil-square"></i> Edit College</h2>
+                <button class="close-btn" onclick="closeEditCollegeModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="cardCollegeName">College Name</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-buildings-fill"></i>
+                    <input type="text" id="cardCollegeName" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cardCollegeAddress">College Address</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <textarea id="cardCollegeAddress" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cardCollegeContact">Contact Number</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-telephone-fill"></i>
+                    <input type="text" id="cardCollegeContact" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cardExpiryDate">Expiry Date</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-calendar-event-fill"></i>
+                    <input type="date" id="cardExpiryDate" required>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditCollegeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveCollegeEdit()">
+                    <i class="bi bi-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        var editColleggeIndex = null;
+
         function loadMainProfile() {
             var db = localStorage.getItem('collegeDB');
             var data;
@@ -580,10 +569,10 @@
         }
 
         function updateMainDisplay(data) {
-            document.getElementById('collegeName').textContent = data.college_name;
-            document.getElementById('collegeNameVal').textContent = data.college_name;
-            document.getElementById('collegeAddrVal').textContent = data.college_address;
-            document.getElementById('collegeContactVal').textContent = data.college_contact_number;
+            document.getElementById('mainCollegeName').textContent = data.college_name;
+            document.getElementById('mainNameVal').textContent = data.college_name;
+            document.getElementById('mainAddrVal').textContent = data.college_address;
+            document.getElementById('mainContactVal').textContent = data.college_contact_number;
         }
 
         function loadColleges() {
@@ -595,6 +584,15 @@
             localStorage.setItem('collegesDB', JSON.stringify(colleges));
         }
 
+        function getExpiryStatus(expiryDate) {
+            var today = new Date();
+            var exp = new Date(expiryDate);
+            var diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return { status: 'expired', days: diffDays, badge: 'Expired', class: 'badge-expired', card: 'expired' };
+            if (diffDays <= 30) return { status: 'expiring', days: diffDays, badge: 'Expiring Soon', class: 'badge-expiring', card: 'expiring' };
+            return { status: 'active', days: diffDays, badge: 'Active', class: 'badge-active', card: 'active' };
+        }
+
         function renderColleges() {
             var colleges = loadColleges();
             var grid = document.getElementById('collegesGrid');
@@ -604,35 +602,24 @@
                 grid.innerHTML = '<div class="empty-state"><i class="bi bi-info-circle"></i><p>No colleges added yet. Click "Add College" to get started.</p></div>';
             } else {
                 grid.innerHTML = colleges.map(function(c, i) {
-                    var today = new Date();
-                    var expDate = new Date(c.expiry_date);
-                    var diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-                    var statusClass = 'active';
-                    var badgeClass = 'badge-active';
-                    var badgeText = 'Active';
+                    var exp = getExpiryStatus(c.expiry_date);
+                    var displayDate = new Date(c.expiry_date).toLocaleDateString('en-GB');
+                    var daysText = exp.days >= 0 ? exp.days + ' days left' : 'Expired';
 
-                    if (diffDays < 0) {
-                        statusClass = 'expired';
-                        badgeClass = 'badge-expired';
-                        badgeText = 'Expired';
-                    } else if (diffDays <= 30) {
-                        statusClass = 'expiring';
-                        badgeClass = 'badge-expiring';
-                        badgeText = 'Expiring Soon';
-                    }
-
-                    var displayDate = expDate.toLocaleDateString('en-GB');
-
-                    return '<div class="college-card ' + statusClass + '">' +
+                    return '<div class="college-card ' + exp.card + '">' +
+                        '<button class="card-edit-btn" onclick="openEditCollegeModal(' + i + ')">' +
+                            '<i class="bi bi-pencil"></i>' +
+                        '</button>' +
                         '<div class="college-name">' + c.college_name + '</div>' +
-                        '<div class="college-detail"><i class="bi bi-geo-alt"></i>' + c.college_address + '</div>' +
-                        '<div class="college-detail"><i class="bi bi-telephone"></i>' + c.college_contact_number + '</div>' +
-                        '<div class="college-detail"><i class="bi bi-calendar-check"></i>Expiry: ' + displayDate + '</div>' +
-                        '<span class="expiry-badge ' + badgeClass + '">' + badgeText + '</span>' +
+                        '<div class="college-detail"><i class="bi bi-geo-alt"></i> ' + c.college_address + '</div>' +
+                        '<div class="college-detail"><i class="bi bi-telephone"></i> ' + c.college_contact_number + '</div>' +
+                        '<div class="college-detail"><i class="bi bi-calendar-check"></i> Expiry: ' + displayDate + '</div>' +
+                        '<span class="expiry-badge ' + exp.class + '">' + exp.badge + '</span>' +
+                        '<div style="font-size:12px;color:#94a3b8;margin-top:8px;">' + daysText + '</div>' +
                         '</div>';
                 }).join('');
             }
-            countEl.textContent = colleges.length;
+            countEl.textContent = '(' + colleges.length + ')';
         }
 
         function openAddModal() {
@@ -660,9 +647,7 @@
             var contact = document.getElementById('addCollegeContact').value.trim();
             var expiry = document.getElementById('addExpiryDate').value;
 
-            if (!name || !address || !contact || !expiry) {
-                return;
-            }
+            if (!name || !address || !contact || !expiry) return;
 
             var colleges = loadColleges();
             colleges.push({
@@ -680,7 +665,7 @@
             }, 1500);
         }
 
-        function openEditModal() {
+        function openEditMainModal() {
             var data = JSON.parse(localStorage.getItem('collegeDB') || '{}');
             if (!data.college_name) {
                 data = {
@@ -720,7 +705,51 @@
             }, 1500);
         }
 
-        loadCollegesDB = loadColleges;
+        function openEditCollegeModal(index) {
+            var colleges = loadColleges();
+            var c = colleges[index];
+            if (!c) return;
+            editColleggeIndex = index;
+            document.getElementById('cardCollegeName').value = c.college_name;
+            document.getElementById('cardCollegeAddress').value = c.college_address;
+            document.getElementById('cardCollegeContact').value = c.college_contact_number;
+            document.getElementById('cardExpiryDate').value = c.expiry_date;
+            document.getElementById('editCollegeModal').style.display = 'flex';
+            setTimeout(function() {
+                document.querySelector('#editCollegeModal .modal').classList.add('show');
+            }, 10);
+        }
+
+        function closeEditCollegeModal() {
+            document.querySelector('#editCollegeModal .modal').classList.remove('show');
+            setTimeout(function() {
+                document.getElementById('editCollegeModal').style.display = 'none';
+            }, 300);
+        }
+
+        function saveCollegeEdit() {
+            var name = document.getElementById('cardCollegeName').value.trim();
+            var address = document.getElementById('cardCollegeAddress').value.trim();
+            var contact = document.getElementById('cardCollegeContact').value.trim();
+            var expiry = document.getElementById('cardExpiryDate').value;
+
+            if (!name || !address || !contact || !expiry) return;
+
+            var colleges = loadColleges();
+            if (editColleggeIndex !== null && colleges[editColleggeIndex]) {
+                colleges[editColleggeIndex] = {
+                    college_name: name,
+                    college_address: address,
+                    college_contact_number: contact,
+                    expiry_date: expiry
+                };
+                saveCollegesDB(colleges);
+                renderColleges();
+            }
+
+            editColleggeIndex = null;
+            closeEditCollegeModal();
+        }
 
         loadMainProfile();
         renderColleges();
